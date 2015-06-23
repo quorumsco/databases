@@ -1,14 +1,15 @@
 package database
 
 import (
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/jmoiron/sqlx"
+
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
-	"../logs"
-	"../settings"
+	"github.com/iogo-framework/logs"
+	"github.com/iogo-framework/settings"
 )
 
 type DB struct {
