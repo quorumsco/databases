@@ -7,21 +7,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-
-	"github.com/iogo-framework/logs"
-	"github.com/iogo-framework/settings"
 )
 
-type DB struct {
-	SQLX *sqlx.DB
-	//GORM *gorm.DB
-}
-
-func InitSQLX() (*sqlx.DB, error) {
+func InitSQLX(engine, source string) (*sqlx.DB, error) {
 	var db *sqlx.DB
 	var err error
 
-	if db, err = sqlx.Connect(settings.DB.Engine, settings.DB.Source); err != nil {
+	if db, err = sqlx.Connect(engine, source); err != nil {
 		return nil, err
 	}
 
@@ -32,8 +24,8 @@ func InitSQLX() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func InitGORM() (*gorm.DB, error) {
-	db, err := gorm.Open(settings.DB.Engine, settings.DB.Source)
+func InitGORM(engine, source string) (*gorm.DB, error) {
+	db, err := gorm.Open(engine, source)
 	if err != nil {
 		return nil, err
 	}
@@ -48,16 +40,4 @@ func InitGORM() (*gorm.DB, error) {
 	db.LogMode(false)
 
 	return &db, nil
-}
-
-func Migrate(models []interface{}) error {
-	db, err := InitGORM()
-	if err != nil {
-		return err
-	}
-
-	db.AutoMigrate(models...)
-	logs.Info("Database migrated")
-
-	return nil
 }
