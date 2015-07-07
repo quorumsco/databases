@@ -1,6 +1,9 @@
 package databases
 
 import (
+	"time"
+
+	"github.com/iogo-framework/logs"
 	"github.com/jinzhu/gorm"
 	"github.com/jmoiron/sqlx"
 
@@ -9,35 +12,61 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func InitSQLX(engine, source string) (*sqlx.DB, error) {
+var (
+	TIMEOUT = 5 * time.Second
+	RETRY   = 3
+)
+
+func InitSQLX(dialect, args string) (*sqlx.DB, error) {
 	var db *sqlx.DB
 	var err error
 
-	if db, err = sqlx.Connect(engine, source); err != nil {
-		return nil, err
+	var i int
+retry:
+	for {
+		db, err = sqlx.Connect(dialect, args)
+		switch {
+		case err == nil:
+			break retry
+		case i >= RETRY:
+			return nil, err
+		default:
+			logs.Error(err)
+			i++
+		}
+		time.Sleep(TIMEOUT)
 	}
 
-	db.Ping()
-	db.SetMaxIdleConns(10)
-	db.SetMaxOpenConns(100)
+	if db.Ping() != nil {
+		return db, err
+	}
 
 	return db, nil
 }
 
-func InitGORM(engine, source string) (*gorm.DB, error) {
-	db, err := gorm.Open(engine, source)
-	if err != nil {
-		return nil, err
+func InitGORM(dialect, args string) (*gorm.DB, error) {
+	var db gorm.DB
+	var err error
+
+	var i int
+retry:
+	for {
+		db, err = gorm.Open(dialect, args)
+		switch {
+		case err == nil:
+			break retry
+		case i >= RETRY:
+			return nil, err
+		default:
+			logs.Error(err)
+			i++
+		}
+		time.Sleep(TIMEOUT)
 	}
 
-	err = db.DB().Ping()
-	if err != nil {
-		return nil, err
+	if db.DB().Ping() != nil {
+		return &db, err
 	}
-
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
-	db.LogMode(false)
 
 	return &db, nil
 }
