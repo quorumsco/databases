@@ -13,9 +13,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var (
+ar (
+	//TIMEOUT time between each try
 	TIMEOUT = 5 * time.Second
-	RETRY   = 3
+	//RETRY number of tries
+	RETRY = 3
 )
 
 // Return a sqlx client
