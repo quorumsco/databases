@@ -13,7 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-ar (
+var (
 	//TIMEOUT time between each try
 	TIMEOUT = 5 * time.Second
 	//RETRY number of tries
