@@ -50,7 +50,7 @@ retry:
 
 // Return a gorm client
 func InitGORM(dialect, args string) (*gorm.DB, error) {
-	var db gorm.DB
+	var db *gorm.DB
 	var err error
 
 	var i int
@@ -70,8 +70,8 @@ retry:
 	}
 
 	if db.DB().Ping() != nil {
-		return &db, err
+		return db, err
 	}
 
-	return &db, nil
+	return db, nil
 }
