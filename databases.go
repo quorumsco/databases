@@ -4,7 +4,7 @@ package databases
 import (
 	"time"
 
-	"github.com/iogo-framework/logs"
+	"github.com/quorumsco/logs"
 	"github.com/jinzhu/gorm"
 	"github.com/jmoiron/sqlx"
 
